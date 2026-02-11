@@ -159,4 +159,8 @@ class LocalIOSDevice(
     override fun addMedia(path: String) {
         deviceController.addMedia(path)
     }
+
+    override fun addFile(path: String, destination: String?) {
+        deviceController.addFile(path, destination)
+    }
 }

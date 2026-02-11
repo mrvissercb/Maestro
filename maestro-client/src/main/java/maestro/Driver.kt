@@ -99,6 +99,8 @@ interface Driver {
 
     fun addMedia(mediaFiles: List<File>)
 
+    fun addFile(files: List<File>, destination: String?)
+
     fun isAirplaneModeEnabled(): Boolean
 
     fun setAirplaneMode(enabled: Boolean)

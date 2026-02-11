@@ -75,6 +75,10 @@ class XCTestIOSDevice(
         error("Not supported")
     }
 
+    override fun addFile(path: String, destination: String?) {
+        error("Not supported")
+    }
+
     override fun scroll(
         xStart: Double,
         yStart: Double,

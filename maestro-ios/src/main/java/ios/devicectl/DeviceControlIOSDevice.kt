@@ -123,6 +123,10 @@ class DeviceControlIOSDevice(override val deviceId: String) : IOSDevice {
         TODO("Not yet implemented")
     }
 
+    override fun addFile(path: String, destination: String?) {
+        TODO("Not yet implemented")
+    }
+
     override fun close() {
         logger.info("[Start] Uninstall the runner app")
         uninstall(id = LocalXCTestInstaller.UI_TEST_RUNNER_APP_BUNDLE_ID)

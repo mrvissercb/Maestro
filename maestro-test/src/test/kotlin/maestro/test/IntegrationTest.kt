@@ -4294,7 +4294,57 @@ class IntegrationTest {
         assert(File("137_shard_device_env_vars_test-device_shard1_idx0.png").exists())
     }
 
-    
+    @Test
+    fun `Case 139 - addFile command emits add file event`() {
+        // given
+        val commands = readCommands("139_add_file")
+        val driver = driver {}
+
+        // when
+        Maestro(driver).use {
+            runBlocking {
+                orchestra(it).runFlow(commands)
+            }
+        }
+
+        // then
+        driver.assertEvents(listOf(Event.AddFile))
+    }
+
+    @Test
+    fun `Case 140 - addFile command allows adding multiple files`() {
+        // given
+        val commands = readCommands("140_add_multiple_files")
+        val driver = driver {}
+
+        // when
+        Maestro(driver).use {
+            runBlocking {
+                orchestra(it).runFlow(commands)
+            }
+        }
+
+        // then
+        driver.assertEvents(listOf(Event.AddFile, Event.AddFile, Event.AddFile))
+    }
+
+    @Test
+    fun `Case 141 - addFile command supports destination parameter`() {
+        // given
+        val commands = readCommands("141_add_file_with_destination")
+        val driver = driver {}
+
+        // when
+        Maestro(driver).use {
+            runBlocking {
+                orchestra(it).runFlow(commands)
+            }
+        }
+
+        // then
+        driver.assertEvents(listOf(Event.AddFile))
+    }
+
     @Test
     fun `hideKeyboard succeeds when keyboard becomes hidden`() {
         // Given

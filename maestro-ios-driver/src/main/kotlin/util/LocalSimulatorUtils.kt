@@ -414,6 +414,15 @@ class LocalSimulatorUtils(private val tempFileHandler: TempFileHandler) {
         )
     }
 
+    fun addFile(deviceId: String, path: String, destination: String?) {
+        val destDir = destination ?: "Documents"
+        val simDataDir = "$homedir/Library/Developer/CoreSimulator/Devices/$deviceId/data/$destDir"
+        val targetDir = File(simDataDir)
+        targetDir.mkdirs()
+        val sourceFile = File(path)
+        sourceFile.copyTo(File(targetDir, sourceFile.name), overwrite = true)
+    }
+
     fun clearKeychain(deviceId: String) {
         runCommand(
             listOf("xcrun", "simctl", "keychain", deviceId, "reset")

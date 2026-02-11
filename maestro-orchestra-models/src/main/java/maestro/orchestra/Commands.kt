@@ -1110,6 +1110,26 @@ data class AddMediaCommand(
     }
 }
 
+data class AddFileCommand(
+    val filePaths: List<String>,
+    val destination: String? = null,
+    override val label: String? = null,
+    override val optional: Boolean = false,
+) : Command {
+
+    override val originalDescription: String
+        get() = "Adding file(s) (${filePaths.size}) to the device" +
+            (destination?.let { " at $it" } ?: "")
+
+    override fun evaluateScripts(jsEngine: JsEngine): Command {
+        return copy(
+            filePaths = filePaths.map { it.evaluateScripts(jsEngine) },
+            destination = destination?.evaluateScripts(jsEngine),
+            label = label?.evaluateScripts(jsEngine)
+        )
+    }
+}
+
 
 data class StopRecordingCommand(
     override val label: String? = null,

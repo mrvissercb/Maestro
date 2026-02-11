@@ -515,6 +515,16 @@ class IOSDriver(
         }
     }
 
+    override fun addFile(files: List<File>, destination: String?) {
+        metrics.measured("operation", mapOf("command" to "addFile", "filesCount" to files.size.toString())) {
+            LOGGER.info("[Start] Adding files to device")
+            files.forEach { file ->
+                iosDevice.addFile(file.path, destination)
+            }
+            LOGGER.info("[Done] Adding files to device")
+        }
+    }
+
     override fun isAirplaneModeEnabled(): Boolean {
         LOGGER.warn("Airplane mode is not available on iOS simulators")
         return false

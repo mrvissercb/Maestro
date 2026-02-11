@@ -1,0 +1,5 @@
+appId: com.example.id
+---
+- addFile:
+    path: "./media/test.pdf"
+    destination: Documents

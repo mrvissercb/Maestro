@@ -154,6 +154,8 @@ interface IOSDevice : AutoCloseable {
     fun eraseText(charactersToErase: Int)
 
     fun addMedia(path: String)
+
+    fun addFile(path: String, destination: String?)
 }
 
 interface IOSScreenRecording : AutoCloseable

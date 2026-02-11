@@ -147,6 +147,10 @@ class SimctlIOSDevice(
         localSimulatorUtils.addMedia(deviceId, path)
     }
 
+    override fun addFile(path: String, destination: String?) {
+        localSimulatorUtils.addFile(deviceId, path, destination)
+    }
+
     override fun setLocation(latitude: Double, longitude: Double): Result<Unit, Throwable> {
         return runCatching {
             localSimulatorUtils.setLocation(deviceId, latitude, longitude)

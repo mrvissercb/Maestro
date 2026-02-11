@@ -1,0 +1,4 @@
+appId: com.example.id
+---
+- addFile:
+  - "./media/test.pdf"

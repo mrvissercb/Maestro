@@ -814,6 +814,32 @@ class AndroidDriver(
         }
     }
 
+    // Unlike addMedia which uses gRPC streaming to write into Android's MediaStore (required for
+    // photos/videos to appear in the gallery), addFile uses a direct adb push via dadb. This is
+    // simpler and more appropriate for arbitrary files (PDFs, CSVs, etc.) that just need to land
+    // on the filesystem where the Files app can find them, rather than being indexed by MediaStore.
+    override fun addFile(files: List<File>, destination: String?) {
+        metrics.measured("operation", mapOf("command" to "addFile", "filesCount" to files.size.toString())) {
+            LOGGER.info("[Start] Adding files to device")
+            val apiLevel = getDeviceApiLevel()
+            files.forEach { file ->
+                val destDir = destination ?: "Download"
+                val remotePath = "/sdcard/$destDir/${file.name}"
+                dadb.push(file, remotePath)
+                triggerMediaScan(remotePath, apiLevel)
+            }
+            LOGGER.info("[Done] Adding files to device")
+        }
+    }
+
+    private fun triggerMediaScan(remotePath: String, apiLevel: Int) {
+        if (apiLevel >= 29) {
+            shell("content call --uri content://media --method scan_file --arg file://$remotePath")
+        } else {
+            shell("am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://$remotePath")
+        }
+    }
+
     override fun isAirplaneModeEnabled(): Boolean {
         return metrics.measured("operation", mapOf("command" to "isAirplaneModeEnabled")) {
             when (val result = shell("cmd connectivity airplane-mode").trim()) {

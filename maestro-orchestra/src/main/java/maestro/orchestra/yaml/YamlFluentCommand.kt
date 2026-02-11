@@ -25,6 +25,7 @@ import maestro.DeviceOrientation
 import maestro.KeyCode
 import maestro.Point
 import maestro.TapRepeat
+import maestro.orchestra.AddFileCommand
 import maestro.orchestra.AddMediaCommand
 import maestro.orchestra.AssertConditionCommand
 import maestro.orchestra.AssertNoDefectsWithAICommand
@@ -138,6 +139,7 @@ data class YamlFluentCommand(
     val startRecording: YamlStartRecording? = null,
     val stopRecording: YamlStopRecording? = null,
     val addMedia: YamlAddMedia? = null,
+    val addFile: YamlAddFile? = null,
     val setAirplaneMode: YamlSetAirplaneMode? = null,
     val toggleAirplaneMode: YamlToggleAirplaneMode? = null,
     val retry: YamlRetryCommand? = null,
@@ -239,6 +241,11 @@ data class YamlFluentCommand(
             addMedia != null -> listOf(
                 MaestroCommand(
                     addMediaCommand = addMediaCommand(addMedia, flowPath)
+                )
+            )
+            addFile != null -> listOf(
+                MaestroCommand(
+                    addFileCommand = addFileCommand(addFile, flowPath)
                 )
             )
             inputText != null -> listOf(MaestroCommand(InputTextCommand(text = inputText.text, label = inputText.label, optional = inputText.optional)))
@@ -504,6 +511,39 @@ data class YamlFluentCommand(
         }
         val mediaAbsolutePathStrings = mediaPaths.mapNotNull { it.absolutePathString() }
         return AddMediaCommand(mediaAbsolutePathStrings, addMedia.label, addMedia.optional)
+    }
+
+    private fun addFileCommand(addFile: YamlAddFile, flowPath: Path): AddFileCommand {
+        val rawPaths: List<String> = when {
+            addFile.files != null && addFile.path != null ->
+                throw SyntaxError("Invalid addFile command: cannot specify both list form and path form")
+            addFile.files != null -> {
+                if (addFile.files.any { it == null }) {
+                    throw SyntaxError("Invalid addFile command: file paths cannot be null")
+                }
+                if (addFile.destination != null) {
+                    throw SyntaxError("Invalid addFile command: destination is not supported with list form, use the map form instead")
+                }
+                addFile.files.filterNotNull()
+            }
+            addFile.path != null -> listOf(addFile.path)
+            else -> throw SyntaxError("Invalid addFile command: no files specified")
+        }
+
+        val resolvedPaths = rawPaths.map {
+            val path = flowPath.fileSystem.getPath(it)
+            val resolvedPath = if (path.isAbsolute) {
+                path
+            } else {
+                flowPath.resolveSibling(path).toAbsolutePath()
+            }
+            if (!resolvedPath.exists()) {
+                throw MediaFileNotFound("File at $path in flow file: $flowPath not found", path)
+            }
+            resolvedPath
+        }
+        val absolutePathStrings = resolvedPaths.mapNotNull { it.absolutePathString() }
+        return AddFileCommand(absolutePathStrings, addFile.destination, addFile.label, addFile.optional)
     }
 
     private fun runFlowCommand(

@@ -482,6 +482,11 @@ class Maestro(
         driver.addMedia(mediaFiles)
     }
 
+    fun addFile(fileNames: List<String>, destination: String?) {
+        val files = fileNames.map { File(it) }
+        driver.addFile(files, destination)
+    }
+
     override fun close() {
         driver.close()
     }

@@ -577,6 +577,10 @@ class WebDriver(
         // noop for web
     }
 
+    override fun addFile(files: List<File>, destination: String?) {
+        // noop for web
+    }
+
     override fun isAirplaneModeEnabled(): Boolean {
         return false;
     }

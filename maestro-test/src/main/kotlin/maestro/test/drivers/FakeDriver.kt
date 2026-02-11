@@ -405,6 +405,12 @@ class FakeDriver : Driver {
         mediaFiles.forEach { _ -> events.add(Event.AddMedia) }
     }
 
+    override fun addFile(files: List<File>, destination: String?) {
+        ensureOpen()
+
+        files.forEach { _ -> events.add(Event.AddFile) }
+    }
+
     override fun isAirplaneModeEnabled(): Boolean {
         return this.airplaneMode
     }
@@ -528,6 +534,8 @@ class FakeDriver : Driver {
         ) : Event()
 
         object AddMedia : Event()
+
+        object AddFile : Event()
 
         object StartRecording : Event()
 

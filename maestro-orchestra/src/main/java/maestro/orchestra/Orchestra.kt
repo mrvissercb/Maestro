@@ -376,6 +376,7 @@ class Orchestra(
             is StartRecordingCommand -> startRecordingCommand(command)
             is StopRecordingCommand -> stopRecordingCommand()
             is AddMediaCommand -> addMediaCommand(command.mediaPaths)
+            is AddFileCommand -> addFileCommand(command)
             is SetAirplaneModeCommand -> setAirplaneMode(command)
             is ToggleAirplaneModeCommand -> toggleAirplaneMode()
             is RetryCommand -> retryCommand(command, config)
@@ -413,6 +414,11 @@ class Orchestra(
 
     private fun addMediaCommand(mediaPaths: List<String>): Boolean {
         maestro.addMedia(mediaPaths)
+        return true
+    }
+
+    private fun addFileCommand(command: AddFileCommand): Boolean {
+        maestro.addFile(command.filePaths, command.destination)
         return true
     }
 
